@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+{% block body_class %}parents-page{% endblock %}
+
+{% block title %}Родителям - Детский сад "Солнышко"{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <h1 class="mb-4">Уважаемые родители!</h1>
+        
+        <!-- Приветствие -->
+        <div class="card kid-friendly mb-4">
+            <div class="card-body">
+                <h3 class="card-title"><i class="fas fa-handshake text-primary"></i> Добро пожаловать!</h3>
+                <p class="card-text">
+                    Этот раздел создан для вашего удобства. Здесь вы найдете все необходимые документы, 
+                    полезные советы и информацию о жизни детского сада. Мы стремимся сделать наше 
+                    сотрудничество максимально прозрачным и комфортным для вас и ваших детей.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Важные документы -->
+        <div class="card kid-friendly mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-file-contract"></i> Важные документы</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Документ</th>
+                                <th>Описание</th>
+                                <th>Скачать</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for doc in important_docs %}
+                            <tr>
+                                <td>
+                                    <i class="fas fa-file-pdf text-danger me-2"></i>
+                                    {{ doc.title }}
+                                </td>
+                                <td class="small">{{ doc.description|truncatechars:80 }}</td>
+                                <td>
+                                    <a href="{{ doc.file.url }}" class="btn btn-sm btn-outline-primary" download>
+                                        <i class="fas fa-download"></i> .{{ doc.get_file_extension }}
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">Документы пока не загружены</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Все документы по категориям -->
+        <div class="card kid-friendly mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fas fa-folder-open"></i> Все документы</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for type_name, docs in docs_by_type.items %}
+                    <div class="col-md-6 mb-3">
+                        <h5><i class="fas fa-folder text-warning"></i> {{ type_name }}</h5>
+                        <ul class="list-unstyled">
+                            {% for doc in docs %}
+                            <li class="mb-2">
+                                <a href="{{ doc.file.url }}" class="text-decoration-none" download>
+                                    <i class="fas fa-file text-muted me-2"></i>
+                                    {{ doc.title }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <p class="text-muted text-center">Документы пока не загружены</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Быстрые ссылки -->
+        <div class="card kid-friendly mb-4">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0"><i class="fas fa-link"></i> Быстрые ссылки</h4>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'groups_list' %}" class="btn btn-outline-primary text-start">
+                        <i class="fas fa-users me-2"></i> Наши группы
+                    </a>
+                    <a href="{% url 'contacts' %}" class="btn btn-outline-success text-start">
+                        <i class="fas fa-phone me-2"></i> Контакты и запись
+                    </a>
+                    <a href="#" class="btn btn-outline-warning text-start" data-bs-toggle="modal" data-bs-target="#paymentModal">
+                        <i class="fas fa-credit-card me-2"></i> Оплата услуг
+                    </a>
+                    <a href="#" class="btn btn-outline-danger text-start" data-bs-toggle="modal" data-bs-target="#scheduleModal">
+                        <i class="fas fa-calendar-alt me-2"></i> Расписание на неделю
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Советы для родителей -->
+        <div class="card kid-friendly mb-4">
+            <div class="card-header bg-warning">
+                <h4 class="mb-0"><i class="fas fa-lightbulb"></i> Полезные советы</h4>
+            </div>
+            <div class="card-body">
+                {% for tip in tips %}
+                <div class="mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
+                    <h6 class="mb-2">
+                        <i class="fas fa-star text-warning"></i> {{ tip.title }}
+                    </h6>
+                    <p class="small mb-2">{{ tip.content|truncatechars:100 }}</p>
+                    <span class="badge bg-light text-dark">
+                        {{ tip.get_category_display }}
+                    </span>
+                </div>
+                {% empty %}
+                <p class="text-muted text-center mb-0">Советы скоро появятся</p>
+                {% endfor %}
+                
+                {% if tips %}
+                <div class="text-center mt-3">
+                    <a href="{% url 'tips_by_category' 'health' %}" class="btn btn-sm btn-outline-primary">
+                        Все советы <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Календарь событий -->
+        <div class="card kid-friendly">
+            <div class="card-header bg-purple text-white">
+                <h4 class="mb-0"><i class="fas fa-calendar-check"></i> Ближайшие события</h4>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item border-0 px-0">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">Родительское собрание</h6>
+                            <small class="text-muted">25.01</small>
+                        </div>
+                        <p class="mb-1 small">18:00, актовый зал</p>
+                    </div>
+                    <div class="list-group-item border-0 px-0">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">Осенний праздник</h6>
+                            <small class="text-muted">28.01</small>
+                        </div>
+                        <p class="mb-1 small">10:00, музыкальный зал</p>
+                    </div>
+                    <div class="list-group-item border-0 px-0">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">День открытых дверей</h6>
+                            <small class="text-muted">05.02</small>
+                        </div>
+                        <p class="mb-1 small">С 9:00 до 18:00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно оплаты -->
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title"><i class="fas fa-credit-card"></i> Оплата услуг</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Реквизиты для оплаты:</strong></p>
+                <ul class="mb-3">
+                    <li>ИНН: 1234567890</li>
+                    <li>КПП: 987654321</li>
+                    <li>Расчетный счет: 40702810123456789012</li>
+                    <li>Банк: АО "Банк"</li>
+                    <li>БИК: 044525999</li>
+                </ul>
+                <p class="text-muted small">Оплата принимается до 25 числа каждого месяца.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно расписания -->
+<div class="modal fade" id="scheduleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="fas fa-calendar-alt"></i> Расписание на неделю</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>День</th>
+                                <th>Утро</th>
+                                <th>День</th>
+                                <th>Вечер</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Понедельник</strong></td>
+                                <td>Развитие речи</td>
+                                <td>Рисование</td>
+                                <td>Спортивные игры</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Вторник</strong></td>
+                                <td>Математика</td>
+                                <td>Лепка</td>
+                                <td>Музыкальное занятие</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Среда</strong></td>
+                                <td>Окружающий мир</td>
+                                <td>Аппликация</td>
+                                <td>Бассейн</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Четверг</strong></td>
+                                <td>Английский язык</td>
+                                <td>Конструирование</td>
+                                <td>Театральная студия</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Пятница</strong></td>
+                                <td>Литература</td>
+                                <td>Свободное творчество</td>
+                                <td>Подготовка к празднику</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-purple {
+        background-color: #6f42c1 !important;
+    }
+    
+    .parents-page .btn-outline-primary:hover {
+        background-color: #ff6b6b;
+        border-color: #ff6b6b;
+        color: white;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(255, 209, 102, 0.1);
+    }
+    
+    .list-group-item:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+{% block body_class %}news-page{% endblock %}
+
+{% block title %}Новости - Детский сад "Солнышко"{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Новости детского сада</h1>
+
+<!-- Фильтр по категориям -->
+<div class="card kid-friendly mb-4">
+    <div class="card-body">
+        <h5 class="card-title mb-3"><i class="fas fa-filter"></i> Категории новостей</h5>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'news_list' %}" 
+               class="btn btn-outline-primary btn-sm {% if not current_category %}active{% endif %}">
+                Все новости
+            </a>
+            {% for value, name in categories %}
+            <a href="{% url 'news_by_category' value %}" 
+               class="btn btn-outline-primary btn-sm {% if current_category == value %}active{% endif %}">
+                {{ name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Список новостей -->
+{% if page_obj %}
+<div class="row">
+    {% for news in page_obj %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <a href="{{ news.get_absolute_url }}" class="text-decoration-none">
+            <div class="card kid-friendly clickable-card h-100">
+                {% if news.image %}
+                <img src="{{ news.image.url }}" class="card-img-top" alt="{{ news.title }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="fas fa-newspaper fa-3x text-warning"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <span class="badge bg-info mb-2">
+                        {{ news.get_category_display }}
+                    </span>
+                    <h5 class="card-title text-dark">{{ news.title }}</h5>
+                    <p class="card-text text-muted small">
+                        {{ news.content|truncatechars:100 }}
+                    </p>
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar-alt"></i> {{ news.published_date|date:"d.m.Y" }}
+                        </small>
+                        <small class="text-muted">
+                            <i class="fas fa-eye"></i> {{ news.views }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Пагинация -->
+{% if page_obj.has_other_pages %}
+<nav aria-label="Навигация по страницам">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Назад</a>
+        </li>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+            </li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Вперед</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="alert alert-info">
+    <i class="fas fa-info-circle"></i> В этой категории пока нет новостей.
+</div>
+{% endif %}
+
+<!-- Блок "Популярные новости" -->
+<div class="card kid-friendly mt-5">
+    <div class="card-body">
+        <h3 class="card-title mb-4"><i class="fas fa-fire text-danger"></i> Часто задаваемые вопросы</h3>
+        <div class="accordion" id="faqAccordion">
+            
+            <!-- Вопрос 1 -->
+            <div class="accordion-item mb-2 border rounded">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" 
+                            style="font-weight: 500; color: #333;">
+                        <i class="fas fa-question-circle text-primary me-2"></i>
+                        Как записаться в детский сад?
+                    </button>
+                </h2>
+                <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body pt-3" style="background-color: #f8f9fa; border-top: 1px solid #dee2e6;">
+                        <p class="mb-2">Запись осуществляется несколькими способами:</p>
+                        <ul class="mb-0">
+                            <li>Через наш сайт (форма "Оставить заявку" на главной)</li>
+                            <li>По телефону: +7 (495) 123-45-67</li>
+                            <li>Лично в детском саду</li>
+                        </ul>
+                        <p class="mt-3 mb-0"><strong>Экскурсии:</strong> проводим каждую субботу в 11:00.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Вопрос 2 -->
+            <div class="accordion-item mb-2 border rounded">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" 
+                            style="font-weight: 500; color: #333;">
+                        <i class="fas fa-question-circle text-primary me-2"></i>
+                        Что нужно принести в первый день?
+                    </button>
+                </h2>
+                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body pt-3" style="background-color: #f8f9fa; border-top: 1px solid #dee2e6;">
+                        <p class="mb-2"><strong>Обязательно:</strong></p>
+                        <ul class="mb-3">
+                            <li>Сменная одежда (2-3 комплекта)</li>
+                            <li>Сменная обувь (удобная, с фиксированной пяткой)</li>
+                            <li>Пижама для сна</li>
+                            <li>Расческа/заколки (для девочек)</li>
+                        </ul>
+                        <p class="mb-0 text-muted small">
+                            <i class="fas fa-exclamation-triangle text-warning"></i>
+                            Все вещи должны быть подписаны!
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Вопрос 3 -->
+            <div class="accordion-item mb-2 border rounded">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" 
+                            style="font-weight: 500; color: #333;">
+                        <i class="fas fa-question-circle text-primary me-2"></i>
+                        Можно ли приводить ребенка с легкой простудой?
+                    </button>
+                </h2>
+                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body pt-3" style="background-color: #f8f9fa; border-top: 1px solid #dee2e6;">
+                        <div class="alert alert-warning mb-3">
+                            <i class="fas fa-ban text-danger"></i>
+                            <strong>Нет, это строго запрещено!</strong>
+                        </div>
+                        <p class="mb-2">Это правило безопасности для всех детей в саду:</p>
+                        <ul class="mb-0">
+                            <li>Защищаем здоровье других детей</li>
+                            <li>Предотвращаем распространение инфекций</li>
+                            <li>Даем ребенку возможность полноценно выздороветь</li>
+                        </ul>
+                        <p class="mt-3 mb-0">
+                            <strong>При первых признаках болезни</strong> ребенка необходимо оставить дома.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Вопрос 4 -->
+            <div class="accordion-item mb-2 border rounded">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4" 
+                            style="font-weight: 500; color: #333;">
+                        <i class="fas fa-question-circle text-primary me-2"></i>
+                        Какой режим дня в детском саду?
+                    </button>
+                </h2>
+                <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body pt-3" style="background-color: #f8f9fa; border-top: 1px solid #dee2e6;">
+                        <p class="mb-2"><strong>Примерный расписание дня:</strong></p>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td class="text-muted" style="width: 30%;">7:00 - 8:30</td>
+                                    <td>Приём детей, свободная игра</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">8:30 - 9:00</td>
+                                    <td>Завтрак</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">9:00 - 10:30</td>
+                                    <td>Развивающие занятия</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">10:30 - 12:00</td>
+                                    <td>Прогулка</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">12:00 - 13:00</td>
+                                    <td>Обед</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">13:00 - 15:00</td>
+                                    <td>Тихий час</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">15:00 - 19:00</td>
+                                    <td>Полдник, игры, уход домой</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+<!-- ... остальной код ... -->
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Стили для аккордеона */
+    .accordion-button {
+        border-radius: 8px !important;
+        padding: 1rem 1.25rem;
+        font-size: 1rem;
+    }
+    
+    .accordion-button:not(.collapsed) {
+        background-color: #fff3cd;
+        color: #856404;
+        border-color: #ffeaa7;
+    }
+    
+    .accordion-button:focus {
+        box-shadow: 0 0 0 0.25rem rgba(255, 209, 102, 0.25);
+        border-color: #ffd166;
+    }
+    
+    .accordion-item {
+        border: 1px solid #dee2e6 !important;
+        border-radius: 8px !important;
+        overflow: hidden;
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .accordion-body {
+        padding: 1.25rem;
+        background-color: #fff;
+    }
+    
+    /* Иконки */
+    .accordion-button i {
+        transition: transform 0.3s ease;
+    }
+    
+    .accordion-button:not(.collapsed) i {
+        transform: rotate(90deg);
+    }
+    
+    /* Отступы для содержимого */
+    .accordion-body ul {
+        padding-left: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .accordion-body li {
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Таблица расписания */
+    .table-borderless td {
+        padding: 0.5rem 0.75rem;
+        border-bottom: 1px dashed #dee2e6;
+    }
+    
+    .table-borderless tr:last-child td {
+        border-bottom: none;
+    }
+</style>
+{% endblock %}

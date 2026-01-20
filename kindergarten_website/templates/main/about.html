@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block body_class %}about-page{% endblock %}
+
+{% block title %}О нас - Детский сад "Солнышко"{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">О нашем детском саде</h1>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card kid-friendly h-100">  <!-- Убрали clickable-card если был -->
+            <div class="card-body">
+                <h3 class="card-title">Наша история</h3>
+                <p class="card-text">
+                    Детский сад "Солнышко" был основан в 2010 году с целью создания современного 
+                    образовательного пространства для детей дошкольного возраста. За годы работы 
+                    мы вырастили и подготовили к школе более 500 выпускников.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card kid-friendly h-100">  <!-- Убрали clickable-card если был -->
+            <div class="card-body">
+                <h3 class="card-title">Наши ценности</h3>
+                <ul class="mb-0">
+                    <li>Безопасность и здоровье детей</li>
+                    <li>Индивидуальный подход</li>
+                    <li>Современные методики</li>
+                    <li>Открытость к родителям</li>
+                    <li>Семейная атмосфера</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card kid-friendly">  <!-- Убрали clickable-card если был -->
+    <div class="card-body">
+        <h3 class="card-title">Наш коллектив</h3>
+        <div class="row text-center">
+            <div class="col-md-3 mb-3">
+                <i class="fas fa-user-graduate fa-2x text-primary mb-2"></i>
+                <h5>8 воспитателей</h5>
+                <small>Высшее образование</small>
+            </div>
+            <div class="col-md-3 mb-3">
+                <i class="fas fa-brain fa-2x text-success mb-2"></i>
+                <h5>2 психолога</h5>
+                <small>Детские специалисты</small>
+            </div>
+            <div class="col-md-3 mb-3">
+                <i class="fas fa-music fa-2x text-info mb-2"></i>
+                <h5>Музыкальный руководитель</h5>
+                <small>Творческие занятия</small>
+            </div>
+            <div class="col-md-3 mb-3">
+                <i class="fas fa-heartbeat fa-2x text-danger mb-2"></i>
+                <h5>Медицинская сестра</h5>
+                <small>Ежедневный осмотр</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

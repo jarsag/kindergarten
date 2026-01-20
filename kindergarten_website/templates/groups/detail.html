@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% block body_class %}groups-detail{% endblock %}
+
+{% block title %}{{ group.name }} - Детский сад "Солнышко"{% endblock %}
+
+{% block content %}
+<!-- Кнопка "Назад" сверху -->
+<div class="mb-4">
+    <a href="{% url 'groups_list' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left"></i> Назад к списку групп
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <h1 class="mb-3">{{ group.name }}</h1>
+        <h4 class="text-muted mb-4">{{ group.get_age_range_display }}</h4>
+        
+        {% if group.group_photo %}
+        <img src="{{ group.group_photo.url }}" class="img-fluid rounded mb-4" alt="{{ group.name }}" style="max-height: 400px; width: 100%; object-fit: cover;">
+        {% else %}
+        <div class="bg-light-placeholder rounded mb-4 p-5 text-center">
+            <i class="fas fa-child fa-7x text-warning"></i>
+            <p class="mt-3 text-muted">Фото группы</p>
+        </div>
+        {% endif %}
+        
+        <div class="card kid-friendly mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-file-alt"></i> Описание группы</h5>
+                <p class="card-text">{{ group.description|linebreaks }}</p>
+            </div>
+        </div>
+        
+        <!-- Возрастные фичи -->
+        <div class="card kid-friendly mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-bullseye"></i> Акцент на развитие</h5>
+                <p class="text-muted">В этом возрасте мы уделяем особое внимание:</p>
+                <ul class="list-group list-group-flush">
+                    {% for feature in group.get_age_specific_features %}
+                    <li class="list-group-item border-0 ps-0">
+                        <i class="fas fa-check-circle text-success me-2"></i>{{ feature }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        
+        {% if group.schedule %}
+        <div class="card kid-friendly mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-calendar-alt"></i> Расписание дня</h5>
+                <div class="schedule-box bg-light p-3 rounded">
+                    {{ group.schedule|linebreaks }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card kid-friendly sticky-top" style="top: 80px;">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-chalkboard-teacher"></i> Воспитатель</h5>
+                {% if group.teacher_photo %}
+                <img src="{{ group.teacher_photo.url }}" class="img-fluid rounded mb-3" alt="{{ group.teacher }}" style="width: 100%; height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="bg-light rounded mb-3 p-4 text-center">
+                    <i class="fas fa-user-circle fa-4x text-secondary"></i>
+                </div>
+                {% endif %}
+                <h6 class="text-center">{{ group.teacher }}</h6>
+                <p class="text-muted text-center mb-0">Опыт работы: 10+ лет</p>
+                
+                <hr>
+                
+                <h5 class="card-title mt-3"><i class="fas fa-info-circle"></i> Информация</h5>
+                <div class="info-list">
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span><i class="fas fa-child me-2"></i>Возраст:</span>
+                        <strong>{{ group.get_age_range_display }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span><i class="fas fa-users me-2"></i>Всего мест:</span>
+                        <strong>{{ group.capacity }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span><i class="fas fa-door-open me-2"></i>Свободно:</span>
+                        <strong class="{% if group.free_places > 3 %}text-success{% elif group.free_places > 0 %}text-warning{% else %}text-danger{% endif %}">
+                            {{ group.free_places }}
+                        </strong>
+                    </div>
+                    <div class="d-flex justify-content-between py-2">
+                        <span><i class="fas fa-user-check me-2"></i>Заполнено:</span>
+                        <strong>{{ group.occupied }}</strong>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h6><i class="fas fa-star"></i> Дополнительно</h6>
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                        {% if group.has_creative %}
+                        <span class="badge bg-info p-2">
+                            <i class="fas fa-palette"></i> Творчество
+                        </span>
+                        {% endif %}
+                        {% if group.has_sports %}
+                        <span class="badge bg-success p-2">
+                            <i class="fas fa-running"></i> Спорт
+                        </span>
+                        {% endif %}
+                        {% if group.has_music %}
+                        <span class="badge bg-warning p-2">
+                            <i class="fas fa-music"></i> Музыка
+                        </span>
+                        {% endif %}
+                        {% if group.has_pool %}
+                        <span class="badge bg-info p-2">
+                            <i class="fas fa-swimmer"></i> Бассейн
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mt-5">
+                    <a href="#" class="btn btn-primary w-100 mb-2 py-2">
+                        <i class="fas fa-edit"></i> Записаться в группу
+                    </a>
+                    <a href="{% url 'groups_list' %}" class="btn btn-outline-secondary w-100 py-2">
+                        <i class="fas fa-arrow-left"></i> Назад к списку
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Дополнительные стили для страницы группы */
+    .bg-light-placeholder {
+        background: linear-gradient(135deg, #fff9e6 0%, #ffeaa7 100%);
+    }
+    
+    .schedule-box {
+        background-color: #f8f9fa;
+        border-left: 4px solid #ff6b6b;
+        font-family: 'Courier New', monospace;
+    }
+    
+    .info-list {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+    }
+    
+    /* Стили для иконок в списке */
+    .list-group-item i {
+        min-width: 20px;
+    }
+</style>
+{% endblock %}

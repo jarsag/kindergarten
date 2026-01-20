@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+{% block body_class %}contacts-page{% endblock %}
+
+{% block title %}Контакты - Детский сад "Солнышко"{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Наши контакты</h1>
+
+<!-- Первый ряд: Контакты и Карта -->
+<div class="row mb-4">
+    <!-- Контактная информация -->
+    <div class="col-md-6">
+        <div class="card kid-friendly h-100">
+            <div class="card-body">
+                <h3 class="card-title"><i class="fas fa-map-marker-alt text-danger"></i> Как нас найти</h3>
+                
+                <div class="contact-info">
+                    <div class="mb-3">
+                        <h5><i class="fas fa-location-dot text-primary"></i> Адрес</h5>
+                        <p class="fs-5">{{ contacts.address }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5><i class="fas fa-phone text-primary"></i> Телефон</h5>
+                        <p class="fs-5">
+                            <a href="tel:{{ contacts.phone|cut:' '|cut:'('|cut:')'|cut:'-'|cut:'+' }}" 
+                               class="text-decoration-none">
+                                {{ contacts.phone }}
+                            </a>
+                        </p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5><i class="fas fa-envelope text-primary"></i> Email</h5>
+                        <p class="fs-5">
+                            <a href="mailto:{{ contacts.email }}" class="text-decoration-none">
+                                {{ contacts.email }}
+                            </a>
+                        </p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5><i class="fas fa-clock text-primary"></i> Часы работы</h5>
+                        <p class="fs-5">{{ contacts.working_hours }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5><i class="fas fa-user-tie text-primary"></i> Директор</h5>
+                        <p class="fs-5">{{ contacts.director }}</p>
+                        <p class="fs-6">
+                            <a href="tel:{{ contacts.director_phone|cut:' '|cut:'('|cut:')'|cut:'-'|cut:'+' }}" 
+                               class="text-decoration-none">
+                                {{ contacts.director_phone }}
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Карта -->
+    <div class="col-md-6">
+        <div class="card kid-friendly h-100">
+            <div class="card-body d-flex flex-column">
+                <h3 class="card-title"><i class="fas fa-map text-success"></i> Мы на карте</h3>
+                
+                <!-- Placeholder, растянутый на всю доступную высоту -->
+                <div class="map-container flex-grow-1 mt-2">  <!-- flex-grow-1 для растягивания -->
+                    <div class="map-placeholder h-100 d-flex flex-column justify-content-center align-items-center">
+                        <i class="fas fa-map-marked-alt fa-4x text-muted mb-3"></i>
+                        <p class="mb-2 fs-5">г. Москва, ул. Детская, 123</p>
+                        <p class="text-muted mb-0">Детский сад "Солнышко"</p>
+                        <small class="text-muted mt-2">(Для тестового проекта)</small>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <a href="https://yandex.ru/maps" target="_blank" class="btn btn-outline-primary btn-sm me-2">
+                        <i class="fas fa-external-link-alt"></i> Яндекс.Карты
+                    </a>
+                    <a href="https://www.google.com/maps" target="_blank" class="btn btn-outline-primary btn-sm">
+                        <i class="fab fa-google"></i> Google Maps
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Второй ряд: Форма и доп. информация -->
+<div class="row">
+    <!-- Форма обратной связи -->
+    <div class="col-lg-8">
+        <div class="card kid-friendly mb-4">
+            <div class="card-body">
+                <h3 class="card-title"><i class="fas fa-comment-dots text-primary"></i> Напишите нам</h3>
+                <form id="contactForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Ваше имя *</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Телефон</label>
+                        <input type="tel" class="form-control" id="phone" placeholder="+7 (999) 123-45-67">
+                    </div>
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Тема сообщения *</label>
+                        <select class="form-select" id="subject" required>
+                            <option value="">Выберите тему</option>
+                            <option value="admission">Запись в детский сад</option>
+                            <option value="tour">Запись на экскурсию</option>
+                            <option value="question">Вопрос по программе</option>
+                            <option value="feedback">Отзыв и предложения</option>
+                            <option value="other">Другое</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Сообщение *</label>
+                        <textarea class="form-control" id="message" rows="4" required></textarea>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="agreeContact" required>
+                        <label class="form-check-label" for="agreeContact">
+                            Я согласен на обработку персональных данных
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Отправить сообщение
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Дополнительная информация -->
+    <div class="col-lg-4">
+        <div class="card kid-friendly mb-4">
+            <div class="card-body">
+                <h3 class="card-title"><i class="fas fa-info-circle text-info"></i> Дополнительная информация</h3>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-bus text-warning me-2"></i>
+                        <strong>Остановка:</strong> "Детский сад"
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-subway text-danger me-2"></i>
+                        <strong>Метро:</strong> "Детская" (5 минут пешком)
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-car text-success me-2"></i>
+                        <strong>Парковка:</strong> Бесплатная для родителей
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-clock text-secondary me-2"></i>
+                        <strong>Прием посетителей:</strong> Пн-Пт 9:00-18:00
+                    </li>
+                    <li>
+                        <i class="fas fa-wifi text-primary me-2"></i>
+                        <strong>Wi-Fi:</strong> Для родителей в холле
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Экстренные контакты -->
+        <div class="card kid-friendly border border-warning">
+            <div class="card-body">
+                <h3 class="card-title text-warning"><i class="fas fa-exclamation-triangle"></i> Экстренные случаи</h3>
+                <p class="small">В случае экстренной ситуации с вашим ребенком:</p>
+                <div class="alert alert-warning">
+                    <p class="mb-1"><strong>Медсестра:</strong> +7 (495) 123-45-69</p>
+                    <p class="mb-0"><strong>Дежурный администратор:</strong> +7 (495) 123-45-70</p>
+                </div>
+                <p class="small text-muted mb-0">Эти номера активны круглосуточно</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript для формы -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contactForm');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            subject: document.getElementById('subject').value,
+            message: document.getElementById('message').value
+        };
+        
+        console.log('Контактная форма:', formData);
+        alert('Спасибо! Ваше сообщение отправлено. Мы ответим в течение 24 часов.');
+        form.reset();
+    });
+});
+</script>
+
+<style>
+    .map-container {
+        min-height: 250px;
+    }
+    
+    .map-placeholder {
+        border: 2px dashed #dee2e6;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 2rem;
+    }
+    
+    .contact-info h5 {
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+    
+    .contact-info .fs-5 {
+        color: #333;
+        margin-bottom: 1.5rem;
+    }
+    
+    .contacts-page a:hover {
+        color: #ff6b6b !important;
+    }
+    
+    .alert-warning {
+        background-color: #fff3cd;
+        border-color: #ffeaa7;
+    }
+    
+    /* Flexbox для карточек */
+    .card.h-100 .card-body.d-flex {
+        padding: 1.25rem;
+    }
+    
+    /* Убедимся, что placeholder заполняет всё пространство */
+    .flex-grow-1 {
+        flex-grow: 1;
+    }
+    
+    /* Делаем карточки одинаковой высоты */
+    .row.mb-4 {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .row.mb-4 > div {
+        display: flex;
+    }
+    
+    .card.h-100 {
+        flex: 1;
+    }
+</style>
+{% endblock %}

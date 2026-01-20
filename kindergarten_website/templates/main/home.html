@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block body_class %}home-page{% endblock %}
+{% block title %}Главная - Детский сад "Солнышко"{% endblock %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="display-4 mb-4">Добро пожаловать в детский сад "Солнышко"! 🌞</h1>
+    <p class="lead">Место, где каждый ребенок окружен заботой, вниманием и любовью</p>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-3 mb-4">
+        <div class="card kid-card h-100 text-center border-0 shadow-sm">
+            <div class="card-body">
+                <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                <h4>Опытные воспитатели</h4>
+                <p>Высококвалифицированные специалисты</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card kid-card h-100 text-center border-0 shadow-sm">
+            <div class="card-body">
+                <i class="fas fa-utensils fa-3x text-success mb-3"></i>
+                <h4>Здоровое питание</h4>
+                <p>Сбалансированное 5-разовое питание</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card kid-card h-100 text-center border-0 shadow-sm">
+            <div class="card-body">
+                <i class="fas fa-gamepad fa-3x text-info mb-3"></i>
+                <h4>Развивающие занятия</h4>
+                <p>Интересные программы развития</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card kid-card h-100 text-center border-0 shadow-sm">
+            <div class="card-body">
+                <i class="fas fa-heart fa-3x text-danger mb-3"></i>
+                <h4>Безопасность</h4>
+                <p>Охраняемая территория</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card kid-card mb-4">
+            <div class="card-body">
+                <h3 class="card-title"><i class="fas fa-star text-warning"></i> Наша миссия</h3>
+                <p class="card-text">
+                    Создание благоприятных условий для полноценного проживания ребенком дошкольного детства, 
+                    формирование основ базовой культуры личности, всестороннее развитие психических и физических качеств 
+                    в соответствии с возрастными и индивидуальными особенностями.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card kid-card clickable-card" data-bs-toggle="modal" data-bs-target="#applicationModal">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="fas fa-bell"></i> Оставить заявку</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Узнайте больше о нас:</strong></p>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check-circle text-success me-2"></i>Запишитесь на экскурсию</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i>Получите консультацию</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i>Узнайте о свободных местах</li>
+                </ul>
+                <div class="text-center mt-3">
+                    <button class="btn btn-primary">Оставить заявку</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для заявки -->
+<div class="modal fade" id="applicationModal" tabindex="-1" aria-labelledby="applicationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title" id="applicationModalLabel">
+                    <i class="fas fa-edit me-2"></i>Оставить заявку
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="applicationForm">
+                    <div class="mb-3">
+                        <label for="parentName" class="form-label">Ваше имя *</label>
+                        <input type="text" class="form-control" id="parentName" placeholder="Иванова Мария" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phoneNumber" class="form-label">Номер телефона *</label>
+                        <input type="tel" class="form-control" id="phoneNumber" placeholder="+7 (999) 123-45-67" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="childAge" class="form-label">Возраст ребенка</label>
+                        <select class="form-select" id="childAge">
+                            <option value="">Выберите возраст</option>
+                            <option value="1.5-3">1.5-3 года</option>
+                            <option value="3-4">3-4 года</option>
+                            <option value="4-5">4-5 лет</option>
+                            <option value="5-6">5-6 лет</option>
+                            <option value="6-7">6-7 лет</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Сообщение (необязательно)</label>
+                        <textarea class="form-control" id="message" rows="3" placeholder="Ваш вопрос или комментарий..."></textarea>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                        <label class="form-check-label" for="agreeTerms">
+                            Я согласен на обработку персональных данных
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" class="btn btn-primary" form="applicationForm">Отправить заявку</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript для обработки формы -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('applicationForm');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Собираем данные формы
+        const formData = {
+            name: document.getElementById('parentName').value,
+            phone: document.getElementById('phoneNumber').value,
+            age: document.getElementById('childAge').value,
+            message: document.getElementById('message').value
+        };
+        
+        // Здесь будет отправка на сервер
+        console.log('Данные формы:', formData);
+        
+        // Показываем уведомление
+        alert('Спасибо! Ваша заявка принята. Мы свяжемся с вами в ближайшее время.');
+        
+        // Закрываем модальное окно
+        const modal = bootstrap.Modal.getInstance(document.getElementById('applicationModal'));
+        modal.hide();
+        
+        // Очищаем форму
+        form.reset();
+    });
+});
+</script>
+{% endblock %}

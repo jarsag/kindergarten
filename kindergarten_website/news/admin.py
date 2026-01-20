@@ -1,0 +1,11 @@
+from django.contrib import admin
+from .models import News
+
+@admin.register(News)
+class NewsAdmin(admin.ModelAdmin):
+    list_display = ('title', 'category', 'published_date', 'is_published', 'views')
+    list_filter = ('category', 'is_published', 'published_date')
+    search_fields = ('title', 'content')
+    prepopulated_fields = {'slug': ('title',)}
+    date_hierarchy = 'published_date'
+    ordering = ('-published_date',)
