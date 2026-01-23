@@ -37,13 +37,16 @@
                                     <p class="mb-1"><small><strong>Возраст:</strong> {{ child.age }} лет</small></p>
                                     <p class="mb-0"><small><strong>Группа:</strong> {{ child.group|default:"Не указана" }}</small></p>
                                 </div>
+                                <!-- ИСПРАВЛЕННЫЕ КНОПКИ -->
                                 <div class="btn-group btn-group-sm">
-                                    <a href="#" class="btn btn-outline-primary" title="Редактировать">
+                                    <a href="{% url 'edit_child' child.id %}" class="btn btn-outline-primary" title="Редактировать">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="#" class="btn btn-outline-danger" title="Удалить">
+                                    <button type="button" class="btn btn-outline-danger" 
+                                            data-bs-toggle="modal" data-bs-target="#deleteModal{{ child.id }}" 
+                                            title="Удалить">
                                         <i class="fas fa-trash"></i>
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -94,16 +97,19 @@
                 </div>
                 {% endif %}
                 
-                <!-- Здесь будет функционал из Табл. 1.1 -->
+                <!-- ВОССТАНОВЛЕННАЯ СЕТКА 2х2 -->
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <div class="card h-100 text-center">
-                            <div class="card-body">
-                                <i class="fas fa-book fa-2x text-primary mb-3"></i>
-                                <h5>Электронный дневник</h5>
-                                <p class="text-muted small">Скоро появится</p>
+                        <a href="{% url 'diary:dashboard' %}" class="text-decoration-none">
+                            <div class="card h-100 text-center hover-card">
+                                <div class="card-body">
+                                    <i class="fas fa-book fa-2x text-primary mb-3"></i>
+                                    <h5>Электронный дневник</h5>
+                                    <p class="text-muted small">Просмотр успехов ребенка</p>
+                                    <span class="badge bg-success">Доступно</span>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                     
                     <div class="col-md-6 mb-3">
@@ -135,9 +141,9 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
+                </div> <!-- Закрывающий тег .row -->
+            </div> <!-- Закрывающий тег .card-body -->
+        </div> <!-- Закрывающий тег .card kid-friendly -->
         
         <div class="card kid-friendly">
             <div class="card-header bg-warning">
@@ -154,8 +160,8 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    </div> <!-- Закрывающий тег .col-md-8 -->
+</div> <!-- Закрывающий тег .row -->
 
 <!-- Модальное окно для добавления ребенка -->
 <div class="modal fade" id="addChildModal" tabindex="-1">
@@ -212,6 +218,41 @@
     </div>
 </div>
 
+<!-- МОДАЛЬНЫЕ ОКНА ДЛЯ ПОДТВЕРЖДЕНИЯ УДАЛЕНИЯ КАЖДОГО РЕБЕНКА -->
+{% for child in children %}
+<div class="modal fade" id="deleteModal{{ child.id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Подтверждение удаления</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning"></i>
+                </div>
+                <p>Вы уверены, что хотите удалить ребенка?</p>
+                <div class="alert alert-danger">
+                    <strong>{{ child.first_name }} {{ child.last_name }}</strong><br>
+                    Возраст: {{ child.age }} лет<br>
+                    Группа: {{ child.group|default:"Не указана" }}
+                </div>
+                <p class="text-muted"><small>Это действие нельзя отменить.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form method="post" action="{% url 'delete_child' child.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Удалить
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
 <style>
     /* Анимация для добавления ребенка */
     .modal.fade .modal-dialog {
@@ -240,6 +281,37 @@
         background-color: #dc3545;
         color: white;
     }
+    
+    /* Стили для модальных окон удаления */
+    .modal .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c2c7;
+    }
+    
+    /* Стили для hover-карточек */
+    .hover-card {
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .hover-card:hover {
+        transform: translateY(-5px);
+        border-color: #0d6efd;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .hover-card .card-body {
+        transition: all 0.3s ease;
+    }
+    
+    .hover-card:hover .card-body {
+        background-color: #f8f9fa;
+    }
+    
+    /* Стиль для активной карточки */
+    .card .badge.bg-success {
+        font-size: 0.7em;
+        padding: 0.25em 0.5em;
+    }
 </style>
-
 {% endblock %}

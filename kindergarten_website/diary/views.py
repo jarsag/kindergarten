@@ -1,0 +1,65 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from children.models import Child
+from .models import DiaryEntry
+from .forms import DiaryEntryForm
+
+@login_required
+def diary_dashboard(request):
+    """Главная страница электронного дневника"""
+    # Получаем детей текущего пользователя
+    children = request.user.children.all()
+    
+    # Получаем последние записи для каждого ребенка
+    child_entries = {}
+    for child in children:
+        entries = child.diary_entries.all()[:5]  # Последние 5 записей
+        if entries.exists():
+            child_entries[child] = entries
+    
+    return render(request, 'diary/dashboard.html', {
+        'children': children,
+        'child_entries': child_entries,
+    })
+
+@login_required
+def child_diary(request, child_id):
+    """Дневник конкретного ребенка"""
+    child = get_object_or_404(Child, id=child_id, parent=request.user)
+    entries = child.diary_entries.all().order_by('-date')
+    
+    return render(request, 'diary/child_diary.html', {
+        'child': child,
+        'entries': entries,
+    })
+
+@login_required
+def add_diary_entry(request, child_id):
+    """Добавление записи в дневник"""
+    child = get_object_or_404(Child, id=child_id, parent=request.user)
+    
+    if request.method == 'POST':
+        form = DiaryEntryForm(request.POST)
+        if form.is_valid():
+            entry = form.save(commit=False)
+            entry.child = child
+            entry.save()
+            messages.success(request, f'Запись в дневник {child.first_name} добавлена!')
+            return redirect('child_diary', child_id=child_id)
+    else:
+        form = DiaryEntryForm()
+    
+    return render(request, 'diary/add_entry.html', {
+        'form': form,
+        'child': child,
+    })
+
+@login_required
+def view_entry(request, entry_id):
+    """Просмотр конкретной записи"""
+    entry = get_object_or_404(DiaryEntry, id=entry_id, child__parent=request.user)
+    
+    return render(request, 'diary/view_entry.html', {
+        'entry': entry,
+    })

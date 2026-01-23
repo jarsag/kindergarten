@@ -9,4 +9,6 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('profile/edit/', views.profile_edit, name='profile_edit'),
     path('add-child/', views.add_child, name='add_child'),
+        path('child/<int:child_id>/edit/', views.edit_child, name='edit_child'),
+    path('child/<int:child_id>/delete/', views.delete_child, name='delete_child'),
 ]

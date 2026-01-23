@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'gallery',  # галерея (добавим позже)
     'parents',  # раздел для родителей (добавим позже),
     'accounts',
-    'children'
+    'children',
+    'diary'
 ]
 
 MIDDLEWARE = [

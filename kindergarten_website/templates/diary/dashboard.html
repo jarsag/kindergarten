@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Электронный дневник{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-book"></i> Электронный дневник</h3>
+                </div>
+                <div class="card-body">
+                    
+                    {% if children %}
+                        <div class="row">
+                            {% for child in children %}
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-info text-white">
+                                        <h5 class="mb-0">{{ child.first_name }} {{ child.last_name }}</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><strong>Возраст:</strong> {{ child.age }} лет</p>
+                                        <p><strong>Группа:</strong> {{ child.group|default:"Не указана" }}</p>
+                                        
+                                        <hr>
+                                        
+                                        <div class="mb-3">
+                                            <a href="{% url 'diary:child_diary' child.id %}" class="btn btn-primary">
+                                                <i class="fas fa-calendar-alt"></i> Перейти к дневнику
+                                            </a>
+                                            <a href="{% url 'diary:add_entry' child.id %}" class="btn btn-success">
+                                                <i class="fas fa-plus"></i> Добавить запись
+                                            </a>
+                                        </div>
+                                        
+                                        <!-- ИСПРАВЛЕННЫЙ БЛОК: используем child.diary_entries напрямую -->
+                                        {% with child.diary_entries.all|slice:":3" as entries %}
+                                        {% if entries %}
+                                        <h6>Последние записи:</h6>
+                                        <ul class="list-group">
+                                            {% for entry in entries %}
+                                            <li class="list-group-item">
+                                                <a href="{% url 'diary:view_entry' entry.id %}">
+                                                    {{ entry.date|date:"d.m.Y" }} - 
+                                                    <!-- ИСПРАВЛЕННЫЙ БЭДЖ: убрано entry.mood_class -->
+                                                    <span class="badge 
+                                                        {% if entry.mood == 'excellent' %}bg-success
+                                                        {% elif entry.mood == 'good' %}bg-info
+                                                        {% elif entry.mood == 'normal' %}bg-primary
+                                                        {% elif entry.mood == 'bad' %}bg-warning text-dark
+                                                        {% elif entry.mood == 'sick' %}bg-danger
+                                                        {% endif %}">
+                                                        {{ entry.get_mood_display }}
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                        {% else %}
+                                        <p class="text-muted">Пока нет записей в дневнике</p>
+                                        {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-child fa-4x text-muted mb-3"></i>
+                            <h4>У вас пока нет добавленных детей</h4>
+                            <p class="text-muted">Добавьте ребенка в личном кабинете, чтобы вести электронный дневник</p>
+                            <a href="{% url 'profile' %}" class="btn btn-primary">Перейти в личный кабинет</a>
+                        </div>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .badge.bg-excellent { background-color: #28a745; }
+    .badge.bg-good { background-color: #20c997; }
+    .badge.bg-normal { background-color: #17a2b8; }
+    .badge.bg-bad { background-color: #ffc107; color: #000; }
+    .badge.bg-sick { background-color: #dc3545; }
+</style>
+{% endblock %}
