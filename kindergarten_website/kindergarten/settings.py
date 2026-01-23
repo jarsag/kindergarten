@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'applications',
     'news',  # новости (добавим позже)
     'gallery',  # галерея (добавим позже)
-    'parents',  # раздел для родителей (добавим позже)
+    'parents',  # раздел для родителей (добавим позже),
+    'accounts'
 ]
 
 MIDDLEWARE = [
@@ -149,3 +150,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'  # Исправляем о�
 #         'width': '100%',
 #     },
 # }
+
+# Настройки аутентификации
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/accounts/profile/'
+LOGOUT_REDIRECT_URL = '/'
+AUTH_USER_MODEL = 'accounts.CustomUser'

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card kid-friendly">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">Вход для родителей</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">Пароль</label>
+                        <input type="password" name="password" class="form-control" required>
+                    </div>
+                    
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-success">Войти</button>
+                    </div>
+                    
+                    <div class="text-center">
+                        <p>Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+                        <p><a href="#">Забыли пароль?</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

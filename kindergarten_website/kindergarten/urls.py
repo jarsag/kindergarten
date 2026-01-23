@@ -26,6 +26,7 @@ urlpatterns = [
     path('news/', include('news.urls')),
     path('parents/', include('parents.urls')),
     path('gallery/', include('gallery.urls')),
+    path('accounts/', include('accounts.urls')),
 ]
 
 if settings.DEBUG:
