@@ -3,26 +3,48 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-5">
-        <div class="card kid-friendly">
-            <div class="card-header bg-success text-white">
-                <h3 class="mb-0">Вход для родителей</h3>
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Вход в личный кабинет</h3>
             </div>
             <div class="card-body">
+                <!-- Сообщения об ошибках/успехе -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
                 <form method="post">
                     {% csrf_token %}
                     
+                    <!-- ПОЛЕ ДЛЯ EMAIL ИЛИ USERNAME -->
                     <div class="mb-3">
-                        <label for="id_email" class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" required>
+                        <label for="id_username" class="form-label">Email или имя пользователя *</label>
+                        <input type="text" 
+                               name="username" 
+                               id="id_username" 
+                               class="form-control" 
+                               placeholder="Введите email или имя пользователя"
+                               required>
                     </div>
                     
+                    <!-- ПОЛЕ ПАРОЛЯ -->
                     <div class="mb-3">
-                        <label for="id_password" class="form-label">Пароль</label>
-                        <input type="password" name="password" class="form-control" required>
+                        <label for="id_password" class="form-label">Пароль *</label>
+                        <input type="password" 
+                               name="password" 
+                               id="id_password" 
+                               class="form-control" 
+                               placeholder="Введите пароль"
+                               required>
                     </div>
                     
                     <div class="d-grid mb-3">
-                        <button type="submit" class="btn btn-success">Войти</button>
+                        <button type="submit" class="btn btn-primary">Войти</button>
                     </div>
                     
                     <div class="text-center">
@@ -34,4 +56,15 @@
         </div>
     </div>
 </div>
+
+<style>
+    .form-control {
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+    }
+    .btn-primary {
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+    }
+</style>
 {% endblock %}

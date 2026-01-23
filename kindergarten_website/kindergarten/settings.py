@@ -112,6 +112,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+PASSWORD_VALIDATION_MESSAGES = {
+    'password_too_short': 'Пароль должен содержать минимум 6 символов',
+    'password_common': 'Пароль слишком простой',
+    'password_numeric': 'Пароль не должен состоять только из цифр',
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
