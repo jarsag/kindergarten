@@ -4,9 +4,9 @@ from django.db import models
 class CustomUser(AbstractUser):
     # Родительская информация
     phone = models.CharField(max_length=20, verbose_name="Телефон", blank=True)
-    child_name = models.CharField(max_length=100, verbose_name="Имя ребенка", blank=True)
-    child_age = models.IntegerField(verbose_name="Возраст ребенка", null=True, blank=True)
-    child_group = models.CharField(max_length=100, verbose_name="Группа ребенка", blank=True)
+    #child_name = models.CharField(max_length=100, verbose_name="Имя ребенка", blank=True)
+    #child_age = models.IntegerField(verbose_name="Возраст ребенка", null=True, blank=True)
+    #child_group = models.CharField(max_length=100, verbose_name="Группа ребенка", blank=True)
     
     # Дополнительные поля
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True, verbose_name="Аватар")

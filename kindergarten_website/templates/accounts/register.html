@@ -8,7 +8,7 @@
                 <h3 class="mb-0">Регистрация родителя</h3>
             </div>
             <div class="card-body">
-                <form method="post">
+                <form method="post" id="registrationForm">
                     {% csrf_token %}
                     
                     <!-- ДОБАВЛЯЕМ ПОЛЕ USERNAME -->
@@ -47,9 +47,43 @@
                         {{ form.phone }}
                     </div>
                     
+                    <!-- УПРОЩЕННАЯ ФОРМА РЕБЕНКА С ЧЕКБОКСОМ -->
                     <div class="mb-3">
-                        <label for="id_child_name" class="form-label">Имя ребенка</label>
-                        {{ form.child_name }}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="addChildCheckbox" 
+                                   name="add_child" value="1">
+                            <label class="form-check-label" for="addChildCheckbox">
+                                <i class="fas fa-child text-primary"></i> Добавить ребенка при регистрации
+                            </label>
+                        </div>
+                        
+                        <div id="childFormFields" style="display: none;">
+                            <div class="card card-body bg-light">
+                                <h6 class="mb-3">Информация о ребенке</h6>
+                                
+                                <div class="mb-3">
+                                    <label for="child_first_name" class="form-label">Имя ребенка</label>
+                                    <input type="text" 
+                                           name="child_first_name" 
+                                           id="child_first_name" 
+                                           class="form-control" 
+                                           placeholder="Введите имя ребенка"
+                                           maxlength="100">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="child_birth_date" class="form-label">Дата рождения</label>
+                                    <input type="date" 
+                                           name="child_birth_date" 
+                                           id="child_birth_date" 
+                                           class="form-control">
+                                </div>
+                                
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-info-circle"></i> Остальную информацию можно добавить позже в личном кабинете
+                                </small>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- ДОБАВЛЯЕМ БЛОК С ТРЕБОВАНИЯМИ К ПАРОЛЮ -->
@@ -104,6 +138,48 @@
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkbox = document.getElementById('addChildCheckbox');
+    const childFormFields = document.getElementById('childFormFields');
+    
+    // Обработчик для чекбокса
+    checkbox.addEventListener('change', function() {
+        if (this.checked) {
+            childFormFields.style.display = 'block';
+        } else {
+            childFormFields.style.display = 'none';
+            // Очищаем поля при скрытии
+            document.getElementById('child_first_name').value = '';
+            document.getElementById('child_birth_date').value = '';
+        }
+    });
+    
+    // Обработчик отправки формы
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+        // Если чекбокс отмечен, проверяем заполнены ли поля ребенка
+        if (checkbox.checked) {
+            const childName = document.getElementById('child_first_name').value.trim();
+            const childBirthDate = document.getElementById('child_birth_date').value;
+            
+            if (!childName) {
+                e.preventDefault();
+                alert('Пожалуйста, введите имя ребенка');
+                document.getElementById('child_first_name').focus();
+                return false;
+            }
+            
+            if (!childBirthDate) {
+                e.preventDefault();
+                alert('Пожалуйста, укажите дату рождения ребенка');
+                document.getElementById('child_birth_date').focus();
+                return false;
+            }
+        }
+    });
+});
+</script>
+
 <style>
     input, select {
         width: 100%;
@@ -140,6 +216,22 @@
         padding: 0.1rem 0.3rem;
         border-radius: 0.2rem;
         font-size: 0.9em;
+    }
+    
+    /* Стиль для чекбокса */
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .form-check-label {
+        font-weight: 500;
+        cursor: pointer;
+    }
+    
+    /* Стиль для карточки ребенка */
+    #childFormFields .card {
+        border: 1px dashed #86b7fe;
     }
 </style>
 {% endblock %}

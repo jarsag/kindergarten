@@ -4,20 +4,40 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from .forms import CustomUserCreationForm, LoginForm
+from children.forms import ChildForm
+from children.models import Child
 
 def register(request):
-    """Регистрация с автоматическим username из email если не указан"""
+    """Регистрация с возможностью добавить ребенка (упрощенная форма)"""
+    from children.forms import SimpleChildForm  # Используем упрощенную форму
+    
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
+        user_form = CustomUserCreationForm(request.POST)
+        child_form = SimpleChildForm(request.POST)  # Упрощенная форма
+        
+        if user_form.is_valid():
+            # Создаем пользователя
+            user = user_form.save()
+            
+            # Если указано имя ребенка, создаем его
+            if child_form.is_valid() and child_form.cleaned_data.get('first_name'):
+                child = child_form.save(commit=False)
+                child.parent = user
+                child.last_name = user.last_name  # Используем фамилию родителя
+                child.save()
+            
+            # Логиним пользователя
             login(request, user)
             messages.success(request, f'Регистрация успешна! Добро пожаловать, {user.first_name}!')
             return redirect('profile')
     else:
-        form = CustomUserCreationForm()
+        user_form = CustomUserCreationForm()
+        child_form = SimpleChildForm()
     
-    return render(request, 'accounts/register.html', {'form': form})
+    return render(request, 'accounts/register.html', {
+        'form': user_form,
+        'child_form': child_form,  # Передаем упрощенную форму
+    })
 
 def login_view(request):
     """Вход по email ИЛИ username - УНИВЕРСАЛЬНЫЙ"""
@@ -60,8 +80,14 @@ def logout_view(request):
 
 @login_required
 def profile(request):
-    """Личный кабинет пользователя"""
-    return render(request, 'accounts/profile.html', {'user': request.user})
+    """Личный кабинет с детьми"""
+    children = request.user.children.all()
+    child_form = ChildForm()
+    
+    return render(request, 'accounts/profile.html', {
+        'children': children,
+        'child_form': child_form,
+    })
 
 @login_required
 def profile_edit(request):
@@ -82,3 +108,33 @@ def profile_edit(request):
     
     return render(request, 'accounts/profile_edit.html', {'form': form})
     """
+
+@login_required
+def add_child(request):
+    """Добавление ребенка через форму"""
+    if request.method == 'POST':
+        try:
+            from children.models import Child
+            
+            # Создаем ребенка
+            child = Child.objects.create(
+                parent=request.user,
+                first_name=request.POST.get('first_name'),
+                last_name=request.POST.get('last_name'),
+                birth_date=request.POST.get('birth_date'),
+                group=request.POST.get('group', ''),
+                allergies=request.POST.get('allergies', ''),
+                medical_notes=request.POST.get('medical_notes', ''),
+            )
+            
+            # Обработка фото если есть
+            if 'photo' in request.FILES:
+                child.photo = request.FILES['photo']
+                child.save()
+            
+            messages.success(request, f'Ребенок {child.first_name} успешно добавлен!')
+            
+        except Exception as e:
+            messages.error(request, f'Ошибка при добавлении ребенка: {str(e)}')
+    
+    return redirect('profile')

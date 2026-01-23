@@ -16,8 +16,7 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ('username', 'email', 'password1', 'password2',
-                 'first_name', 'last_name', 'phone',
-                 'child_name', 'child_age', 'child_group')
+                 'first_name', 'last_name', 'phone')  # УБРАЛИ поля ребенка
     
     def save(self, commit=True):
         user = super().save(commit=False)
