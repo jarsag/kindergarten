@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block title %}Запись дневника{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-book-open"></i> Запись дневника
+                    </h3>
+                    <div>
+                        <span class="badge bg-light text-dark me-2">
+                            {{ entry.date|date:"d.m.Y" }}
+                        </span>
+                        
+                        <!-- КНОПКИ РЕДАКТИРОВАНИЯ И УДАЛЕНИЯ -->
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'diary:edit_entry' entry.id %}" class="btn btn-outline-light" title="Редактировать">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button type="button" class="btn btn-outline-light" 
+                                    data-bs-toggle="modal" data-bs-target="#deleteModal{{ entry.id }}"
+                                    title="Удалить">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Информация о ребенке -->
+                    <div class="alert alert-info mb-4">
+                        <h5><i class="fas fa-child"></i> {{ entry.child.first_name }} {{ entry.child.last_name }}</h5>
+                        <p class="mb-0">Возраст: {{ entry.child.age }} лет | Группа: {{ entry.child.group|default:"Не указана" }}</p>
+                    </div>
+                    
+                    <!-- Настроение -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-smile"></i> Настроение и состояние</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <span class="badge {% if entry.mood == 'excellent' %}bg-success
+                                                    {% elif entry.mood == 'good' %}bg-info
+                                                    {% elif entry.mood == 'normal' %}bg-primary
+                                                    {% elif entry.mood == 'bad' %}bg-warning text-dark
+                                                    {% elif entry.mood == 'sick' %}bg-danger{% endif %} fs-6 me-3">
+                                    {{ entry.get_mood_display }}
+                                </span>
+                                
+                                <div class="ms-3">
+                                    {% if entry.ate_well %}<span class="badge bg-success me-2"><i class="fas fa-utensils"></i> Хорошо покушал</span>{% endif %}
+                                    {% if entry.slept_well %}<span class="badge bg-primary me-2"><i class="fas fa-bed"></i> Хорошо спал</span>{% endif %}
+                                    {% if entry.participated %}<span class="badge bg-info"><i class="fas fa-child"></i> Активно участвовал</span>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Активности -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-tasks"></i> Чем занимался</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>{{ entry.activities|linebreaks }}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Достижения -->
+                    {% if entry.achievements %}
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-star"></i> Достижения</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>{{ entry.achievements|linebreaks }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Медицинские данные -->
+                    {% if entry.temperature or entry.medicine_taken %}
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-heartbeat"></i> Медицинские наблюдения</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if entry.temperature %}
+                            <p><strong>Температура:</strong> {{ entry.temperature }}°C</p>
+                            {% endif %}
+                            {% if entry.medicine_taken %}
+                            <p><strong>Лекарства:</strong> {{ entry.medicine_taken }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Рекомендации -->
+                    {% if entry.recommendations %}
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Рекомендации родителям</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>{{ entry.recommendations|linebreaks }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Заметки воспитателя -->
+                    {% if entry.teacher_notes %}
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-sticky-note"></i> Заметки воспитателя</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>{{ entry.teacher_notes|linebreaks }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Кнопки навигации -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'diary:child_diary' entry.child.id %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Назад к дневнику
+                        </a>
+                        <a href="{% url 'diary:dashboard' %}" class="btn btn-primary">
+                            <i class="fas fa-home"></i> На главную дневника
+                        </a>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО ДЛЯ УДАЛЕНИЯ ЗАПИСИ -->
+<div class="modal fade" id="deleteModal{{ entry.id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Удаление записи</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+                </div>
+                <p>Вы уверены, что хотите удалить запись от <strong>{{ entry.date|date:"d.m.Y" }}</strong>?</p>
+                
+                <div class="alert alert-warning">
+                    <p class="mb-1"><strong>Ребенок:</strong> {{ entry.child.first_name }}</p>
+                    <p class="mb-1"><strong>Настроение:</strong> {{ entry.get_mood_display }}</p>
+                    {% if entry.activities %}
+                    <p class="mb-0"><strong>Активность:</strong> {{ entry.activities|truncatechars:100 }}</p>
+                    {% endif %}
+                </div>
+                
+                <p class="text-muted"><small>Это действие нельзя отменить.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form method="post" action="{% url 'diary:delete_entry' entry.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Удалить
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-outline-light:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .card .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .badge.bg-success { background-color: #28a745; }
+    .badge.bg-info { background-color: #17a2b8; }
+    .badge.bg-primary { background-color: #007bff; }
+    .badge.bg-warning { background-color: #ffc107; color: #000; }
+    .badge.bg-danger { background-color: #dc3545; }
+</style>
+{% endblock %}

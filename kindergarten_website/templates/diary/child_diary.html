@@ -51,9 +51,17 @@
                                     {% if entry.participated %}<i class="fas fa-child text-info" title="Активно участвовал"></i>{% endif %}
                                 </td>
                                 <td>
-                                    <a href="{% url 'diary:view_entry' entry.id %}" class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-eye"></i> Просмотр
-                                    </a>
+                                    <!-- КНОПКИ ДЕЙСТВИЙ -->
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'diary:view_entry' entry.id %}" class="btn btn-outline-primary" title="Просмотр">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger" 
+                                                data-bs-toggle="modal" data-bs-target="#deleteEntryModal{{ entry.id }}"
+                                                title="Удалить запись">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -73,4 +81,96 @@
         </div>
     </div>
 </div>
+
+<!-- МОДАЛЬНЫЕ ОКНА ДЛЯ ПОДТВЕРЖДЕНИЯ УДАЛЕНИЯ КАЖДОЙ ЗАПИСИ -->
+{% for entry in entries %}
+<div class="modal fade" id="deleteEntryModal{{ entry.id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Удаление записи</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+                </div>
+                <p>Вы уверены, что хотите удалить запись от <strong>{{ entry.date|date:"d.m.Y" }}</strong>?</p>
+                
+                <div class="alert alert-warning">
+                    <p class="mb-1"><strong>Ребенок:</strong> {{ entry.child.first_name }} {{ entry.child.last_name }}</p>
+                    <p class="mb-1"><strong>Настроение:</strong> 
+                        <span class="badge 
+                            {% if entry.mood == 'excellent' %}bg-success
+                            {% elif entry.mood == 'good' %}bg-info
+                            {% elif entry.mood == 'normal' %}bg-primary
+                            {% elif entry.mood == 'bad' %}bg-warning text-dark
+                            {% elif entry.mood == 'sick' %}bg-danger{% endif %}">
+                            {{ entry.get_mood_display }}
+                        </span>
+                    </p>
+                    {% if entry.activities %}
+                    <p class="mb-0"><strong>Активность:</strong> {{ entry.activities|truncatechars:100 }}</p>
+                    {% endif %}
+                </div>
+                
+                <p class="text-muted"><small>Это действие нельзя отменить. Все данные записи будут удалены.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form method="post" action="{% url 'diary:delete_entry' entry.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Да, удалить
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<style>
+    /* Стили для кнопок действий */
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #0d6efd;
+        color: white;
+    }
+    
+    .btn-outline-danger:hover {
+        background-color: #dc3545;
+        color: white;
+    }
+    
+    /* Стили для модальных окон */
+    .modal .alert-warning {
+        background-color: #fff3cd;
+        border-color: #ffeaa7;
+    }
+    
+    /* Эффект при наведении на строку таблицы */
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Добавляем подтверждение удаления через JavaScript для дополнительной безопасности
+    const deleteForms = document.querySelectorAll('form[action*="delete_entry"]');
+    deleteForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const confirmDelete = confirm('Вы уверены, что хотите удалить эту запись? Это действие нельзя отменить.');
+            if (!confirmDelete) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

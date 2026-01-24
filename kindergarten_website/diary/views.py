@@ -46,7 +46,8 @@ def add_diary_entry(request, child_id):
             entry.child = child
             entry.save()
             messages.success(request, f'Запись в дневник {child.first_name} добавлена!')
-            return redirect('child_diary', child_id=child_id)
+            # ИСПРАВЛЕНО: добавлен namespace 'diary:'
+            return redirect('diary:child_diary', child_id=child_id)
     else:
         form = DiaryEntryForm()
     
@@ -62,4 +63,43 @@ def view_entry(request, entry_id):
     
     return render(request, 'diary/view_entry.html', {
         'entry': entry,
+    })
+
+@login_required
+def delete_diary_entry(request, entry_id):
+    """Удаление записи из дневника"""
+    entry = get_object_or_404(DiaryEntry, id=entry_id, child__parent=request.user)
+    child_id = entry.child.id
+    
+    if request.method == 'POST':
+        child_name = entry.child.first_name
+        entry_date = entry.date
+        entry.delete()
+        
+        messages.success(request, f'Запись от {entry_date.strftime("%d.%m.%Y")} удалена из дневника {child_name}')
+        return redirect('diary:child_diary', child_id=child_id)
+    
+    # Если GET запрос - показываем страницу подтверждения
+    return render(request, 'diary/confirm_delete_entry.html', {
+        'entry': entry,
+    })
+
+@login_required
+def edit_diary_entry(request, entry_id):
+    """Редактирование записи в дневнике"""
+    entry = get_object_or_404(DiaryEntry, id=entry_id, child__parent=request.user)
+    
+    if request.method == 'POST':
+        form = DiaryEntryForm(request.POST, instance=entry)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Запись от {entry.date.strftime("%d.%m.%Y")} обновлена!')
+            return redirect('diary:view_entry', entry_id=entry_id)
+    else:
+        form = DiaryEntryForm(instance=entry)
+    
+    return render(request, 'diary/edit_entry.html', {
+        'form': form,
+        'entry': entry,
+        'child': entry.child,
     })

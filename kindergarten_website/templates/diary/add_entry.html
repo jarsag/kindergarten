@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block title %}Добавить запись в дневник{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-plus-circle"></i> Новая запись в дневнике
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <h5><i class="fas fa-child"></i> {{ child.first_name }} {{ child.last_name }}</h5>
+                        <p class="mb-0">Возраст: {{ child.age }} лет | Группа: {{ child.group|default:"Не указана" }}</p>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Настроение и состояние -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-smile"></i> Настроение и состояние</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="id_mood" class="form-label">Настроение ребенка *</label>
+                                    <select name="mood" id="id_mood" class="form-control" required>
+                                        <option value="">Выберите настроение...</option>
+                                        <option value="excellent">😊 Отличное</option>
+                                        <option value="good">🙂 Хорошее</option>
+                                        <option value="normal">😐 Обычное</option>
+                                        <option value="bad">😔 Плохое</option>
+                                        <option value="sick">🤒 Болеет</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="ate_well" id="id_ate_well" checked>
+                                            <label class="form-check-label" for="id_ate_well">
+                                                <i class="fas fa-utensils text-success"></i> Хорошо покушал
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="slept_well" id="id_slept_well" checked>
+                                            <label class="form-check-label" for="id_slept_well">
+                                                <i class="fas fa-bed text-primary"></i> Хорошо спал
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="participated" id="id_participated" checked>
+                                            <label class="form-check-label" for="id_participated">
+                                                <i class="fas fa-child text-info"></i> Активно участвовал
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Активности и достижения -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-tasks"></i> Активности и достижения</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="id_activities" class="form-label">Чем занимался сегодня *</label>
+                                    <textarea name="activities" id="id_activities" class="form-control" rows="3" 
+                                              placeholder="Опишите занятия ребенка за день..." required></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="id_achievements" class="form-label">Достижения и успехи</label>
+                                    <textarea name="achievements" id="id_achievements" class="form-control" rows="2" 
+                                              placeholder="Что нового узнал, чему научился..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Медицинские наблюдения -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-heartbeat"></i> Медицинские наблюдения</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="id_temperature" class="form-label">Температура (°C)</label>
+                                        <input type="number" name="temperature" id="id_temperature" 
+                                               class="form-control" step="0.1" min="35" max="42"
+                                               placeholder="36.6">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="id_medicine_taken" class="form-label">Принятые лекарства</label>
+                                        <input type="text" name="medicine_taken" id="id_medicine_taken" 
+                                               class="form-control" placeholder="Если давали лекарства">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Заметки и рекомендации -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-sticky-note"></i> Заметки и рекомендации</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="id_recommendations" class="form-label">Рекомендации родителям</label>
+                                    <textarea name="recommendations" id="id_recommendations" class="form-control" rows="2" 
+                                              placeholder="Что почитать, во что поиграть дома..."></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="id_teacher_notes" class="form-label">Заметки воспитателя</label>
+                                    <textarea name="teacher_notes" id="id_teacher_notes" class="form-control" rows="3" 
+                                              placeholder="Дополнительные заметки, наблюдения..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Кнопки -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'diary:child_diary' child.id %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Отмена
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Сохранить запись
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .card {
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+    }
+    
+    .card-header.bg-light {
+        background-color: #f8f9fa !important;
+    }
+    
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        opacity: 1;
+    }
+    
+    textarea.form-control {
+        resize: vertical;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Автоматическая установка сегодняшней даты в скрытом поле
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Подсказки для полей
+    const activitiesField = document.getElementById('id_activities');
+    activitiesField.addEventListener('focus', function() {
+        if (!this.value) {
+            this.placeholder = 'Пример: Утром рисовал красками, днем играл в конструктор, вечером слушал сказку...';
+        }
+    });
+    
+    // Валидация температуры
+    const tempField = document.getElementById('id_temperature');
+    tempField.addEventListener('blur', function() {
+        const value = parseFloat(this.value);
+        if (value && (value < 35 || value > 42)) {
+            alert('Температура должна быть в пределах 35-42°C');
+            this.focus();
+        }
+    });
+});
+</script>
+{% endblock %}

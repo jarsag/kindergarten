@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Удаление записи дневника{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> Подтверждение удаления
+                    </h3>
+                </div>
+                <div class="card-body text-center">
+                    
+                    <div class="mb-4">
+                        <i class="fas fa-book fa-4x text-danger mb-3"></i>
+                        <h4>Вы уверены, что хотите удалить эту запись?</h4>
+                    </div>
+                    
+                    <!-- Информация о записи -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Информация о записи</h5>
+                        </div>
+                        <div class="card-body text-start">
+                            <p><strong>Ребенок:</strong> {{ entry.child.first_name }} {{ entry.child.last_name }}</p>
+                            <p><strong>Дата:</strong> {{ entry.date|date:"d.m.Y" }}</p>
+                            <p><strong>Настроение:</strong> 
+                                <span class="badge 
+                                    {% if entry.mood == 'excellent' %}bg-success
+                                    {% elif entry.mood == 'good' %}bg-info
+                                    {% elif entry.mood == 'normal' %}bg-primary
+                                    {% elif entry.mood == 'bad' %}bg-warning text-dark
+                                    {% elif entry.mood == 'sick' %}bg-danger{% endif %}">
+                                    {{ entry.get_mood_display }}
+                                </span>
+                            </p>
+                            {% if entry.activities %}
+                            <p><strong>Активность:</strong> {{ entry.activities|truncatechars:50 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Форма удаления -->
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="{% url 'diary:child_diary' entry.child.id %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Отмена
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Да, удалить запись
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="mt-4">
+                        <p class="text-muted">
+                            <small><i class="fas fa-info-circle"></i> Это действие нельзя отменить.</small>
+                        </p>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
