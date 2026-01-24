@@ -52,7 +52,9 @@ INSTALLED_APPS = [
     'parents',  # раздел для родителей (добавим позже),
     'accounts',
     'children',
-    'diary'
+    'diary',
+    'payments',
+
 ]
 
 MIDDLEWARE = [

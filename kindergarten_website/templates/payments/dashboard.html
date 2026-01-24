@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+
+{% block title %}Онлайн-оплата{% endblock %}
+
+{% block extra_css %}
+<style>
+    .invoice-card {
+        transition: all 0.3s ease;
+        border-left: 4px solid;
+    }
+    
+    .invoice-card.pending {
+        border-left-color: #ffc107;
+    }
+    
+    .invoice-card.paid {
+        border-left-color: #28a745;
+    }
+    
+    .invoice-card.overdue {
+        border-left-color: #dc3545;
+    }
+    
+    .invoice-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .stat-card {
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Заголовок -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1><i class="fas fa-credit-card text-success"></i> Онлайн-оплата</h1>
+                <a href="{% url 'payments:payment_history' %}" class="btn btn-outline-success">
+                    <i class="fas fa-history"></i> История платежей
+                </a>
+            </div>
+            <p class="text-muted">Управление счетами и онлайн-оплата услуг детского сада</p>
+        </div>
+    </div>
+    
+    <!-- Статистика -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Всего счетов</h5>
+                    <h2 class="mb-0">{{ total_invoices }}</h2>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card bg-warning text-dark">
+                <div class="card-body">
+                    <h5 class="card-title">Ожидают оплаты</h5>
+                    <h2 class="mb-0">{{ total_pending }}</h2>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Оплачено</h5>
+                    <h2 class="mb-0">{{ total_paid }}</h2>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Общая сумма</h5>
+                    <h2 class="mb-0">{{ total_amount }} ₽</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Предупреждения о просроченных счетах -->
+    {% if overdue_invoices %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-danger">
+                <h5><i class="fas fa-exclamation-triangle"></i> Внимание! Просроченные счета</h5>
+                <p class="mb-0">У вас есть {{ overdue_invoices|length }} просроченных счетов. Пожалуйста, оплатите их как можно скорее.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Быстрые действия -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-bolt"></i> Быстрые действия</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'payments:invoices_list' %}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-file-invoice"></i> Все счета
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'payments:invoices_list' %}?status=pending" class="btn btn-outline-warning w-100">
+                                <i class="fas fa-clock"></i> Ожидают оплаты
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'payments:invoices_list' %}?status=paid" class="btn btn-outline-success w-100">
+                                <i class="fas fa-check-circle"></i> Оплаченные
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'payments:payment_history' %}" class="btn btn-outline-info w-100">
+                                <i class="fas fa-history"></i> История платежей
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Последние счета -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-receipt"></i> Последние счета</h5>
+                    <a href="{% url 'payments:invoices_list' %}" class="btn btn-sm btn-primary">
+                        Показать все
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if invoices %}
+                        <div class="row">
+                            {% for invoice in invoices %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card invoice-card {{ invoice.status }}">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h6 class="mb-1">Счет #{{ invoice.invoice_number }}</h6>
+                                                <p class="mb-1">
+                                                    <strong>Ребенок:</strong> {{ invoice.child.first_name }}
+                                                </p>
+                                                <p class="mb-1">
+                                                    <strong>Сумма:</strong> {{ invoice.amount }} ₽
+                                                </p>
+                                                <p class="mb-1">
+                                                    <strong>Срок оплаты:</strong> {{ invoice.due_date|date:"d.m.Y" }}
+                                                </p>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="badge 
+                                                    {% if invoice.status == 'paid' %}bg-success
+                                                    {% elif invoice.status == 'pending' %}bg-warning
+                                                    {% elif invoice.status == 'overdue' %}bg-danger
+                                                    {% else %}bg-secondary{% endif %}">
+                                                    {{ invoice.get_status_display }}
+                                                </span>
+                                                <div class="mt-2">
+                                                    {% if invoice.status == 'pending' %}
+                                                    <a href="{% url 'payments:make_payment' invoice.id %}" 
+                                                       class="btn btn-sm btn-success">
+                                                        <i class="fas fa-credit-card"></i> Оплатить
+                                                    </a>
+                                                    {% endif %}
+                                                    <a href="{% url 'payments:invoice_detail' invoice.id %}" 
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        Подробнее
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                            <h5>Счетов пока нет</h5>
+                            <p class="text-muted">Все счета будут отображаться здесь</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

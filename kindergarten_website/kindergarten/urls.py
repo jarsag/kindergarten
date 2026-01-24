@@ -28,6 +28,7 @@ urlpatterns = [
     path('gallery/', include('gallery.urls')),
     path('accounts/', include('accounts.urls')),
     path('diary/', include('diary.urls', namespace='diary')),
+    path('payments/', include('payments.urls', namespace='payments')),
 ]
 
 if settings.DEBUG:
