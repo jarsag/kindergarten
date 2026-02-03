@@ -1,7 +1,10 @@
 # accounts/forms.py
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import get_user_model
 from .models import CustomUser
+
+User = get_user_model()
 
 class CustomUserCreationForm(UserCreationForm):
     # Делаем username необязательным
@@ -17,6 +20,13 @@ class CustomUserCreationForm(UserCreationForm):
         model = CustomUser
         fields = ('username', 'email', 'password1', 'password2',
                  'first_name', 'last_name', 'phone')  # УБРАЛИ поля ребенка
+    
+    def clean_email(self):
+        """Проверка уникальности email"""
+        email = self.cleaned_data.get('email')
+        if email and User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Пользователь с таким email уже существует.")
+        return email
     
     def save(self, commit=True):
         user = super().save(commit=False)
